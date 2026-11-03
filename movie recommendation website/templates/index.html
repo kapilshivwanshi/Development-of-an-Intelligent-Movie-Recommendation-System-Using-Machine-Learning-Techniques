@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineMatch | Machine Learning Movie Recommender</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" id="brandLogo">
+        <span class="brand-icon">🎬</span>
+        <span class="brand-name">Cine<span class="accent-text">Match</span></span>
+        <span class="ml-badge">ML Powered</span>
+      </div>
+
+      <div class="nav-search">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search by movie title, director, actor..." autocomplete="off" />
+          <button id="clearSearchBtn" class="clear-search-btn" title="Clear search" style="display: none;">&times;</button>
+        </div>
+        <!-- Live Autocomplete Suggestions Dropdown -->
+        <div id="autocompleteDropdown" class="autocomplete-dropdown" style="display: none;"></div>
+      </div>
+
+      <div class="nav-actions">
+        <button id="surpriseMeBtn" class="btn btn-secondary">
+          <span>🎲</span> Surprise Me
+        </button>
+        <button id="watchlistToggleBtn" class="btn btn-primary watchlist-btn">
+          <span>⭐</span> Watchlist
+          <span id="watchlistCountBadge" class="watchlist-badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+
+    <!-- Hero Showcase Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <div class="hero-pill">
+          <span class="pulse-dot"></span> Content-Based ML Recommender (TF-IDF + Cosine Similarity)
+        </div>
+        <h1 class="hero-title">
+          Smart Movie Recommendations, <br><span class="hero-gradient">Powered by Pure Math & ML</span>
+        </h1>
+        <p class="hero-subtitle">
+          Select any movie or search your favorite story to instantly discover semantically similar cinematic masterpieces—calculated in real time using vector space cosine similarity.
+        </p>
+        <div class="hero-quick-picks">
+          <span class="quick-label">Try popular picks:</span>
+          <button class="quick-chip" data-title="Inception">Inception</button>
+          <button class="quick-chip" data-title="Interstellar">Interstellar</button>
+          <button class="quick-chip" data-title="The Dark Knight">The Dark Knight</button>
+          <button class="quick-chip" data-title="Pulp Fiction">Pulp Fiction</button>
+          <button class="quick-chip" data-title="Parasite">Parasite</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dynamic Recommendation Stage (Appears when a movie is selected) -->
+    <section id="recommendationSection" class="recommendation-section" style="display: none;">
+      <div class="section-header">
+        <div class="rec-title-group">
+          <span class="section-tag">Machine Learning Match Engine</span>
+          <h2 id="recHeading" class="section-title">Recommendations for Movie</h2>
+        </div>
+        <div class="ml-info-pill">
+          <span>📐 Model: <strong>TF-IDF & Cosine Similarity</strong> (No Deep Learning)</span>
+        </div>
+      </div>
+
+      <!-- Selected Movie Spotlight Banner -->
+      <div id="selectedMovieBanner" class="selected-movie-banner">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Recommended Movies Grid -->
+      <div class="rec-grid-header">
+        <h3 class="subsection-title">Top Similar Movies</h3>
+        <span id="recCountInfo" class="rec-count-info">Showing top 8 matches</span>
+      </div>
+      <div id="recommendationsGrid" class="movies-grid">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- Movie Catalog Section -->
+    <section class="catalog-section">
+      <div class="catalog-controls">
+        <div class="catalog-header-left">
+          <h2 class="section-title">Explore Cinema Library</h2>
+          <p class="section-subtitle">Click any movie card to calculate instant ML recommendations</p>
+        </div>
+
+        <div class="catalog-sort">
+          <label for="sortSelect">Sort By:</label>
+          <select id="sortSelect" class="custom-select">
+            <option value="rating">Top Rated (IMDb)</option>
+            <option value="year">Latest Release</option>
+            <option value="title">Alphabetical (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Genre Filter Pills Carousel -->
+      <div class="genre-filter-wrapper">
+        <div id="genreFilters" class="genre-filters">
+          <button class="genre-chip active" data-genre="all">All Genres</button>
+          <!-- Additional genre chips injected dynamically -->
+        </div>
+      </div>
+
+      <!-- Main Movies Grid -->
+      <div id="moviesCatalogGrid" class="movies-grid">
+        <!-- Movie Cards rendered via JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Movie Detail Modal -->
+  <div id="movieModal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <button id="closeModalBtn" class="modal-close-btn">&times;</button>
+      <div id="modalBody" class="modal-body">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Watchlist Slide-out Drawer -->
+  <div id="watchlistDrawer" class="drawer-overlay" style="display: none;">
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <h3>⭐ Your Watchlist</h3>
+        <button id="closeDrawerBtn" class="drawer-close-btn">&times;</button>
+      </div>
+      <div id="watchlistContent" class="drawer-content">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <div class="footer-brand">
+          <span>🎬 Cine<span class="accent-text">Match</span></span>
+        </div>
+        <p>A high-performance Movie Recommendation System built with classical Machine Learning.</p>
+      </div>
+      <div class="footer-tech">
+        <span class="tech-item"><strong>Tech Stack:</strong></span>
+        <span class="tech-tag">Python (TF-IDF & Cosine Similarity)</span>
+        <span class="tech-tag">HTML5 & CSS3</span>
+        <span class="tech-tag">JavaScript</span>
+        <span class="tech-tag">Zero Deep Learning</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
